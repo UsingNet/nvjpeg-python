@@ -234,9 +234,9 @@ int NvJpegPython_test(char* inputJpegFilePath, char* outputRawPath, char* output
 
 int main(int args, char** argv){
     NvJpegPython_test(
-        "./test/test.jpg", 
-        "./test/out/c-test.bgr",
-        "./test/out/c-test.jpg"
+        "./tests/test.jpg", 
+        "./tests/out/c-test.bgr",
+        "./tests/out/c-test.jpg"
     );
     return 0;
 }

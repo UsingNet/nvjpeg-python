@@ -1,2 +1,6 @@
 out
 .vscode
+*.pyc
+dist
+build
+nvjpeg.egg-info
