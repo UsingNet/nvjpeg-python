@@ -11,7 +11,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="nvjpeg",
+    name="pynvjpeg",
     version="0.0.1",
     author="Usingnet",
     author_email="zengqinghui@usingnet.com",
@@ -29,7 +29,7 @@ setuptools.setup(
         "Environment :: GPU :: NVIDIA CUDA :: 10.2",
         "Environment :: GPU :: NVIDIA CUDA :: 11.0",
     ],
-    keywords="nvjpeg jpeg encode decode",
+    keywords="pynvjpeg nvjpeg jpeg encode decode",
     python_requires=">=3.6",
     project_urls={
         'Source': 'https://github.com/UsingNet/nvjpeg-python',

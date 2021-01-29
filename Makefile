@@ -44,8 +44,8 @@ out/nvjpeg-python.o: out nvjpeg-python.c
 
 out/${PYTHON_LIB_NAME}: out/nvjpeg-python.o
 	gcc --shared -fPIC -o out/${PYTHON_LIB_NAME} out/nvjpeg-python.o -L${CUDA_PATH}/lib64 -lnvjpeg -lcudart -L${PYTHON_LIB_PATH} -lpython${PYTHON_VERSION}m ${CFLAGS}
-	mkdir -p nvjpeg/lib
-	cp -f out/${PYTHON_LIB_NAME} nvjpeg/lib/${PYTHON_LIB_NAME}
+	mkdir -p pynvjpeg/lib
+	cp -f out/${PYTHON_LIB_NAME} pynvjpeg/lib/${PYTHON_LIB_NAME}
 
 clean:
 	rm -Rf out

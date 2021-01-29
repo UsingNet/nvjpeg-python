@@ -3,4 +3,5 @@ out
 *.pyc
 dist
 build
-nvjpeg.egg-info
+pynvjpeg.egg-info
+pynvjpeg
