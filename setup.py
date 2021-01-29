@@ -1,6 +1,11 @@
+#!/usr/bin/env python3
 import setuptools
 import sys
 import os
+import glob
+
+pwd = os.path.abspath(os.path.dirname(__file__))
+os.system("cd '%s'; make" % (pwd,))
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -31,10 +36,8 @@ setuptools.setup(
         'Tracker': 'https://github.com/UsingNet/nvjpeg-python/issues',
     },
     data_files=[
-        ('src', ['nvjpeg-python.c', 'Makefile'])
-    ],
-    scripts=[
-        'scripts/build.py'
+        ('', ['nvjpeg-python.c', 'Makefile']),
+        ('nvjpeg/lib', glob.glob('%s/nvjpeg/lib/*.so' % pwd))
     ],
     install_requires=['numpy']
 )
