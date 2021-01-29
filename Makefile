@@ -50,5 +50,5 @@ out/${PYTHON_LIB_NAME}: out/nvjpeg-python.o
 clean:
 	rm -Rf out
 
-install: out/${PYTHON_LIB_NAME}
-	cp -f out/${PYTHON_LIB_NAME} ${PYTHON_DYNLOAD_PATH}
+# install: out/${PYTHON_LIB_NAME}
+# 	cp -f out/${PYTHON_LIB_NAME} ${PYTHON_DYNLOAD_PATH}
