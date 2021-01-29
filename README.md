@@ -22,7 +22,7 @@ make install
 ```python
 #!/usr/bin/env python3
 
-from nvjpeg import NvJpeg 
+from pynvjpeg import NvJpeg 
 
 # read file
 fp = open("input-image.jpg", "rb")
