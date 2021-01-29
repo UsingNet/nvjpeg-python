@@ -3,12 +3,13 @@
 #include <malloc.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifndef BUILD_TEST
 #include <Python.h>
 #include <structmember.h>
-
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
-
+#endif
 
 typedef struct
 {
@@ -241,7 +242,7 @@ int main(int args, char** argv){
     return 0;
 }
 
-#endif
+#else
 
 typedef struct
 {
@@ -404,3 +405,5 @@ PyInit_nvjpeg(void) {
     return pReturn;
 }
 
+
+#endif

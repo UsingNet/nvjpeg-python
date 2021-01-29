@@ -4,10 +4,12 @@ import sys
 import os
 import numpy as np
 import cv2
+import glob
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+for lib in glob.glob(os.path.join(os.path.dirname(__file__), "../build/lib.*")):
+    sys.path.append(lib)
 
-from pynvjpeg import NvJpeg 
+from nvjpeg import NvJpeg 
 
 fp = open(os.path.join(os.path.dirname(__file__), "test.jpg"), "rb")
 img = fp.read()
