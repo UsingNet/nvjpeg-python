@@ -22,7 +22,7 @@ setuptools.setup(
     url="https://github.com/UsingNet/nvjpeg-python",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Development Status :: 4 - Beta"
+        "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3 :: Only",
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
