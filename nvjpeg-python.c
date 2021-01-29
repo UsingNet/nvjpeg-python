@@ -375,7 +375,7 @@ static PyModuleDef ModuleInfo =
 };
 
 PyMODINIT_FUNC
-PyInit_NvJpeg(void) {
+PyInit_nvjpeg(void) {
     PyObject * pReturn = NULL;
     NvJpeg_ClassInfo.tp_new = PyType_GenericNew;
 
