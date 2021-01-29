@@ -295,7 +295,8 @@ static PyObject* NvJpeg_decode(NvJpeg* Self, PyObject* Argvs)
     unsigned char* data = NvJpegPythonImage2HostMemory(img);
     npy_intp dims[1] = {(npy_intp)((img->width)*(img->height))*3};
     PyObject* temp = PyArray_SimpleNewFromData(1, dims, NPY_UINT8, data);
-    free(data);
+    PyArray_ENABLEFLAGS((PyArrayObject*) temp, NPY_ARRAY_OWNDATA);
+    // free(data);
     
     PyObject* shape = Py_BuildValue("(i,i,i)", 3, img->height, img->width);
     NvJpegPython_destoryImage(&img);
@@ -310,7 +311,7 @@ static PyObject* NvJpeg_decode(NvJpeg* Self, PyObject* Argvs)
 
     rtn = PyArray_SwapAxes((PyArrayObject*)temp, 0, 1);
     Py_DECREF(temp);
-
+    // Py_INCREF(rtn);
     return rtn;
 }
 
@@ -338,11 +339,14 @@ static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
     }
 
     NvJpegPythonHandle* m_handle = (NvJpegPythonHandle*)Self->m_handle;
-    NvJpegPythonImage* img = NvJpegPython_createImageFromHost(PyArray_DIM(vecin, 0), PyArray_DIM(vecin, 1), (const unsigned char*)PyArray_BYTES(vecin), 3);
+    NvJpegPythonImage* img = NvJpegPython_createImageFromHost(PyArray_DIM(vecin, 1), PyArray_DIM(vecin, 0), (const unsigned char*)PyArray_BYTES(vecin), 3);
     NvJpegJpegData* data = NvJpegPython_encode(m_handle, img, quality);
 
     PyObject* rtn = PyByteArray_FromStringAndSize((const char*)data->data, data->size);
+
+    NvJpegPython_destoryJpegData(&data);
     NvJpegPython_destoryImage(&img);
+    
     return rtn;
 }
 
