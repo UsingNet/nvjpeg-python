@@ -234,9 +234,9 @@ int NvJpegPython_test(char* inputJpegFilePath, char* outputRawPath, char* output
 
 int main(int args, char** argv){
     NvJpegPython_test(
-        "/media/Data/Projects/nsc/database/color-test/CAP_1772.jpg", 
-        "/home/henry/snap/yuview/16/output.bgr",
-        "/home/henry/snap/yuview/16/output.jpg"
+        "./test/test.jpg", 
+        "./test/out/c-test.bgr",
+        "./test/out/c-test.jpg"
     );
     return 0;
 }
@@ -285,39 +285,53 @@ static PyObject* NvJpeg_decode(NvJpeg* Self, PyObject* Argvs)
     
     unsigned char* jpegData;
     int len;
-    if(!PyArg_ParseTuple(Argvs, "s#", &jpegData, &len)){
+    if(!PyArg_ParseTuple(Argvs, "y#", &jpegData, &len)){
         printf("Parse the argument FAILED! You should jpegData byte string!\n");
         Py_INCREF(Py_None);
         return Py_None;
     }
     NvJpegPythonImage* img = NvJpegPython_decode(m_handle, (const unsigned char*)jpegData, len);
-    npy_intp dims[2] = {(npy_intp)(img->nComponent), (npy_intp)((img->width)*(img->height))};
-    PyObject* temp = PyArray_SimpleNewFromData(2, dims, NPY_UINT8, img->img.channel);
 
-    PyObject* shape = PyTuple_New(3);
-    PyTuple_SetItem(shape, 0, PyLong_FromLong(3));
-    PyTuple_SetItem(shape, 1, PyLong_FromLong(img->height));
-    PyTuple_SetItem(shape, 2, PyLong_FromLong(img->width));
+    unsigned char* data = NvJpegPythonImage2HostMemory(img);
+    npy_intp dims[1] = {(npy_intp)((img->width)*(img->height))*3};
+    PyObject* temp = PyArray_SimpleNewFromData(1, dims, NPY_UINT8, data);
+    free(data);
     
-
+    PyObject* shape = Py_BuildValue("(i,i,i)", 3, img->height, img->width);
+    NvJpegPython_destoryImage(&img);
     PyObject* rtn = PyArray_Reshape((PyArrayObject*)temp, shape);
     Py_DECREF(shape);
     Py_DECREF(temp);
+    temp = rtn;
 
-    NvJpegPython_destoryImage(&img);
+    rtn = PyArray_SwapAxes((PyArrayObject*)temp, 0, 2);
+    Py_DECREF(temp);
+    temp = rtn;
+
+    rtn = PyArray_SwapAxes((PyArrayObject*)temp, 0, 1);
+    Py_DECREF(temp);
+
     return rtn;
 }
 
 static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
 {
     PyArrayObject *vecin;
-    unsigned int quality;
-    if (!PyArg_ParseTuple(Argvs, "O!I", &PyArray_Type, &vecin, &quality)){
+    unsigned int quality = 70;
+    if (!PyArg_ParseTuple(Argvs, "O!|I", &PyArray_Type, &vecin, &quality)){
         printf("Parse the argument FAILED! You should pass BGR image numpy array!\n");
         Py_INCREF(Py_None);
         return Py_None;
     }
-    if (NULL == vecin)  return NULL;
+
+    if (NULL == vecin){
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
+    if(quality>100){
+        quality = 100;
+    }
 
     if (PyArray_NDIM(vecin) != 3){
         printf("Parse the argument FAILED! You should pass BGR image numpy array by height*width*channel !\n");
