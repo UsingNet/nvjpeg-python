@@ -34,8 +34,8 @@ setuptools.setup(
         ('src', ['nvjpeg-python.c', 'Makefile'])
     ],
     scripts=[
-        'scripts/build.sh'
+        'scripts/build.py'
     ],
-    install_requires=['make', 'gcc']
+    install_requires=['numpy']
 )
 
