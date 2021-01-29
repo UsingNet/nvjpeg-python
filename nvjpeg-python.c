@@ -63,6 +63,7 @@ NvJpegPythonImage* NvJpegPython_createImage(int width, int height, int nComponen
         imgdesc->img.channel[i] = pBuffer + (width*height*i);
         imgdesc->img.pitch[i] = width;
     }
+    imgdesc->img.pitch[0] = width*3;
 
     imgdesc->height = height;
     imgdesc->width = width;
@@ -86,6 +87,7 @@ NvJpegPythonImage* NvJpegPython_createImageFromHost(int width, int height, const
         imgdesc->img.channel[i] = pBuffer + (width*height*i);
         imgdesc->img.pitch[i] = width;
     }
+    imgdesc->img.pitch[0] = width*3;
     cudaMemcpy(imgdesc->img.channel[0], data, width*height*3, cudaMemcpyHostToDevice);
 
     imgdesc->height = height;
@@ -114,7 +116,7 @@ NvJpegPythonImage* NvJpegPython_decode(NvJpegPythonHandle* handle, const unsigne
     nvjpegGetImageInfo(nv_handle, jpegData, length, &nComponent, &subsampling, widths, heights);
 
     NvJpegPythonImage* imgdesc = NvJpegPython_createImage(widths[0], heights[0], nComponent, subsampling);
-    int nReturnCode = nvjpegDecode(nv_handle, nv_statue, jpegData, length, NVJPEG_OUTPUT_BGR, &(imgdesc->img), NULL);
+    int nReturnCode = nvjpegDecode(nv_handle, nv_statue, jpegData, length, NVJPEG_OUTPUT_BGRI, &(imgdesc->img), NULL);
 
     if(nReturnCode != 0)
     {
@@ -162,7 +164,7 @@ NvJpegJpegData* NvJpegPython_encode(NvJpegPythonHandle* handle, NvJpegPythonImag
     nvjpegEncoderParamsSetOptimizedHuffman(nv_enc_params, 1, NULL);
     nvjpegEncoderParamsSetSamplingFactors(nv_enc_params, img->subsampling, NULL);
 
-    nvjpegEncodeImage(nv_handle, nv_enc_state, nv_enc_params, &(img->img), NVJPEG_INPUT_BGR, img->width, img->height, NULL);
+    nvjpegEncodeImage(nv_handle, nv_enc_state, nv_enc_params, &(img->img), NVJPEG_INPUT_BGRI, img->width, img->height, NULL);
 
     size_t length;
     nvjpegEncodeRetrieveBitstream(nv_handle, nv_enc_state, NULL, &length, NULL);
@@ -293,26 +295,13 @@ static PyObject* NvJpeg_decode(NvJpeg* Self, PyObject* Argvs)
     NvJpegPythonImage* img = NvJpegPython_decode(m_handle, (const unsigned char*)jpegData, len);
 
     unsigned char* data = NvJpegPythonImage2HostMemory(img);
-    npy_intp dims[1] = {(npy_intp)((img->width)*(img->height))*3};
-    PyObject* temp = PyArray_SimpleNewFromData(1, dims, NPY_UINT8, data);
+
+    npy_intp dims[3] = {(npy_intp)(img->height), (npy_intp)(img->width), 3};
+    PyObject* temp = PyArray_SimpleNewFromData(3, dims, NPY_UINT8, data);
+
     PyArray_ENABLEFLAGS((PyArrayObject*) temp, NPY_ARRAY_OWNDATA);
-    // free(data);
-    
-    PyObject* shape = Py_BuildValue("(i,i,i)", 3, img->height, img->width);
     NvJpegPython_destoryImage(&img);
-    PyObject* rtn = PyArray_Reshape((PyArrayObject*)temp, shape);
-    Py_DECREF(shape);
-    Py_DECREF(temp);
-    temp = rtn;
-
-    rtn = PyArray_SwapAxes((PyArrayObject*)temp, 0, 2);
-    Py_DECREF(temp);
-    temp = rtn;
-
-    rtn = PyArray_SwapAxes((PyArrayObject*)temp, 0, 1);
-    Py_DECREF(temp);
-    // Py_INCREF(rtn);
-    return rtn;
+    return temp;
 }
 
 static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
@@ -339,6 +328,7 @@ static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
     }
 
     NvJpegPythonHandle* m_handle = (NvJpegPythonHandle*)Self->m_handle;
+
     NvJpegPythonImage* img = NvJpegPython_createImageFromHost(PyArray_DIM(vecin, 1), PyArray_DIM(vecin, 0), (const unsigned char*)PyArray_BYTES(vecin), 3);
     NvJpegJpegData* data = NvJpegPython_encode(m_handle, img, quality);
 

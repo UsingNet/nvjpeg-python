@@ -9,7 +9,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 from distutils.core import setup, Extension
 setup(name='pynvjpeg',
-    version='0.0.3',
+    version='0.0.4',
     ext_modules=[Extension('nvjpeg', ['nvjpeg-python.c'])],
     author="Usingnet",
     author_email="developer@usingnet.com",

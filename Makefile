@@ -46,10 +46,14 @@ out/nvjpeg-test: out/nvjpeg-test.o
 # out/${PYTHON_LIB_NAME}: out/nvjpeg-python.o
 # 	gcc --shared -fPIC -o out/${PYTHON_LIB_NAME} out/nvjpeg-python.o -L${CUDA_PATH}/lib64 -lnvjpeg -lcudart -L${PYTHON_LIB_PATH} -lpython${PYTHON_VERSION}m ${CFLAGS}
 python-interface:
-	${PYTHON_BIN} setup.py build_ext
+	${PYTHON_BIN} setup.py build
 
 clean:
 	rm -Rf out build dist pynvjpeg.egg-info
+
+release: clean python-interface
+	${PYTHON_BIN} setup.py sdist
+	${PYTHON_BIN} -m twine upload dist/*
 
 # install: out/${PYTHON_LIB_NAME}
 # 	cp -f out/${PYTHON_LIB_NAME} ${PYTHON_DYNLOAD_PATH}
