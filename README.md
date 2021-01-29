@@ -7,15 +7,11 @@ NvJpeg - Python
 * numpy >= 1.7
 * python >= 3.6
 * gcc >= 7.5
-
-## Build
-```shell
-make
-```
+* make >= 4.1
 
 ## Install
 ```shell
-make install
+pip install pynvjpeg
 ```
 
 ## Usage
