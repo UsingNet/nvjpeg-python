@@ -37,7 +37,7 @@ setuptools.setup(
     },
     data_files=[
         ('', ['nvjpeg-python.c', 'Makefile']),
-        ('nvjpeg/lib', glob.glob('%s/nvjpeg/lib/*.so' % pwd))
+        ('pynvjpeg/lib', glob.glob('%s/pynvjpeg/lib/*.so' % pwd))
     ],
     install_requires=['numpy']
 )

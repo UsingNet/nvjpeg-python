@@ -48,7 +48,7 @@ out/${PYTHON_LIB_NAME}: out/nvjpeg-python.o
 	cp -f out/${PYTHON_LIB_NAME} pynvjpeg/lib/${PYTHON_LIB_NAME}
 
 clean:
-	rm -Rf out
+	rm -Rf out dist build out pynvjpeg.egg-info
 
 # install: out/${PYTHON_LIB_NAME}
 # 	cp -f out/${PYTHON_LIB_NAME} ${PYTHON_DYNLOAD_PATH}
