@@ -286,9 +286,8 @@ static PyObject* NvJpeg_decode(NvJpeg* Self, PyObject* Argvs)
     unsigned char* jpegData;
     int len;
     if(!PyArg_ParseTuple(Argvs, "y#", &jpegData, &len)){
-        printf("Parse the argument FAILED! You should jpegData byte string!\n");
-        Py_INCREF(Py_None);
-        return Py_None;
+        PyErr_SetString(PyExc_ValueError, "Parse the argument FAILED! You should jpegData byte string!");
+        return NULL;
     }
     NvJpegPythonImage* img = NvJpegPython_decode(m_handle, (const unsigned char*)jpegData, len);
 
@@ -319,9 +318,8 @@ static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
     PyArrayObject *vecin;
     unsigned int quality = 70;
     if (!PyArg_ParseTuple(Argvs, "O!|I", &PyArray_Type, &vecin, &quality)){
-        printf("Parse the argument FAILED! You should pass BGR image numpy array!\n");
-        Py_INCREF(Py_None);
-        return Py_None;
+        PyErr_SetString(PyExc_ValueError, "Parse the argument FAILED! You should pass BGR image numpy array!");
+        return NULL;
     }
 
     if (NULL == vecin){
@@ -329,14 +327,13 @@ static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
         return Py_None;
     }
 
-    if(quality>100){
-        quality = 100;
+    if (PyArray_NDIM(vecin) != 3){
+        PyErr_SetString(PyExc_ValueError, "Parse the argument FAILED! You should pass BGR image numpy array by height*width*channel!");
+        return NULL;
     }
 
-    if (PyArray_NDIM(vecin) != 3){
-        printf("Parse the argument FAILED! You should pass BGR image numpy array by height*width*channel !\n");
-        Py_INCREF(Py_None);
-        return Py_None;
+    if(quality>100){
+        quality = 100;
     }
 
     NvJpegPythonHandle* m_handle = (NvJpegPythonHandle*)Self->m_handle;
