@@ -200,7 +200,7 @@ int NvJpegPython_test(char* inputJpegFilePath, char* outputRawPath, char* output
 
     printf("Image Size: %d x %d\n", width, height);
     for(int i = 0;i < nComponent;i++){
-        printf("Channel %d size: %ld \n", i, img->img.pitch[i]);
+        printf("Channel %d size: %ld \n", i, (long int)img->img.pitch[i]);
     }
 
     unsigned char* buffer = NvJpegPythonImage2HostMemory(img);
