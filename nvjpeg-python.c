@@ -329,7 +329,14 @@ static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
 
     NvJpegPythonHandle* m_handle = (NvJpegPythonHandle*)Self->m_handle;
 
-    NvJpegPythonImage* img = NvJpegPython_createImageFromHost(PyArray_DIM(vecin, 1), PyArray_DIM(vecin, 0), (const unsigned char*)PyArray_BYTES(vecin), 3);
+    PyObject* bytes = PyObject_CallMethod((PyObject*)vecin, "tobytes", NULL);
+
+    int length;
+    unsigned char* buffer;
+    PyArg_Parse(bytes, "y#", &buffer, &length);    
+    NvJpegPythonImage* img = NvJpegPython_createImageFromHost(PyArray_DIM(vecin, 1), PyArray_DIM(vecin, 0), buffer, 3 );
+    Py_DECREF(bytes);
+
     NvJpegJpegData* data = NvJpegPython_encode(m_handle, img, quality);
 
     PyObject* rtn = PyByteArray_FromStringAndSize((const char*)data->data, data->size);
