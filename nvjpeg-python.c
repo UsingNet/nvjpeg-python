@@ -339,7 +339,8 @@ static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
 
     NvJpegJpegData* data = NvJpegPython_encode(m_handle, img, quality);
 
-    PyObject* rtn = PyByteArray_FromStringAndSize((const char*)data->data, data->size);
+    // PyObject* rtn = PyByteArray_FromStringAndSize((const char*)data->data, data->size);
+    PyObject* rtn = PyBytes_FromStringAndSize((const char*)data->data, data->size);
 
     NvJpegPython_destoryJpegData(&data);
     NvJpegPython_destoryImage(&img);
