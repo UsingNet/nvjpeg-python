@@ -15,29 +15,41 @@ pip install pynvjpeg
 ```
 
 ## Usage
+
+### 0. Init PyNvJpeg
 ```python
-#!/usr/bin/env python3
-
-from nvjpeg import NvJpeg 
-
-# read file
-fp = open("input-image.jpg", "rb")
-jpegData = fp.read()
-fp.close()
-
-# decode
+from nvjpeg import NvJpeg
 nj = NvJpeg()
-img_np = nj.decode(jpegData)
+```
 
-# use opencv show numpy image data
-cv2.imshow("Demo", img_np)
-cv2.waitKey(0)
+### 1. Use PyNvJpeg
 
-# encode numpy image data
-jpg = nj.encode(img_np)
+#### Read Jpeg File to Numpy
+```python
+img = nj.read("_JPEG_FILE_PATH_")
+## like cv2.imread("_JPEG_FILE_PATH_")
+```
 
-# write file
-fp = open("output-image.jpg", "wb")
-fp.write(jpg)
-fp.close()
+#### Write Numpy to Jpeg File
+```python
+nj.write("_JPEG_FILE_PATH_", img)
+# or nj.write("_JPEG_FILE_PATH_", quality)
+# int quality default 70, mean jpeg quality
+# like cv2.imwrite("_JPEG_FILE_PATH_", img)
+```
+
+#### Decode Jpeg bytes in variable
+```python
+img = nj.decode(jpeg_bytes)
+# like cv2.imdecode(variable)
+```
+
+#### Encode image numpy array to bytes
+```python
+jpeg_bytes = nj.encode(img)
+# or with jpeg quality
+# jpeg_bytes = nj.encode(img, 70)
+# int quality default 70, mean jpeg quality
+
+# like cv2.imencode(".jpg", variable)[1]
 ```

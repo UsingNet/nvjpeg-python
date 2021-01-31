@@ -32,3 +32,7 @@ fp.write(nj_jpg)
 fp.close()
 
 cv2.imwrite(os.path.join(os.path.dirname(__file__), "out", "python-opencv-test.jpg"), cv_np)
+
+
+nv_np = nj.read(image_file)
+nj.write(os.path.join(os.path.dirname(__file__), "out", "python-nvjpeg-write-test.jpg"), nv_np)
