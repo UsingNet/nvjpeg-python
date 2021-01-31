@@ -27,7 +27,7 @@ nj = NvJpeg()
 #### Read Jpeg File to Numpy
 ```python
 img = nj.read("_JPEG_FILE_PATH_")
-## like cv2.imread("_JPEG_FILE_PATH_")
+# like cv2.imread("_JPEG_FILE_PATH_")
 ```
 
 #### Write Numpy to Jpeg File
