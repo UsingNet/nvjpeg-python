@@ -31,7 +31,7 @@ def test_process(id):
     fp.close()
 
  
-executor = ThreadPoolExecutor(max_workers=2)
+executor = ThreadPoolExecutor(max_workers=10)
 task_ids = range(10)
 print("submit test")
 all_task = [executor.submit(test_process, (id)) for id in task_ids]
