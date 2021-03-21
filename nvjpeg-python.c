@@ -34,7 +34,7 @@ typedef struct
 
 static NvJpegPythonHandle* __gllobal_NvJpegPython = NULL;
 
-NvJpegPythonHandle* NvJpegPython_createHandle(){
+NvJpegPythonHandle* NvJpegPython_startUpEnv(){
     if(__gllobal_NvJpegPython==NULL){
         __gllobal_NvJpegPython = (NvJpegPythonHandle*)malloc(sizeof(NvJpegPythonHandle));
         nvjpegCreateSimple(&(__gllobal_NvJpegPython->nv_handle));
@@ -42,20 +42,14 @@ NvJpegPythonHandle* NvJpegPython_createHandle(){
         nvjpegEncoderStateCreate(__gllobal_NvJpegPython->nv_handle, &(__gllobal_NvJpegPython->nv_enc_state), NULL);
     }
     return __gllobal_NvJpegPython;
-    // NvJpegPythonHandle* handle = NULL;
-    // handle = (NvJpegPythonHandle*)malloc(sizeof(NvJpegPythonHandle));
-    // nvjpegCreateSimple(&(handle->nv_handle));
-    // nvjpegJpegStateCreate(handle->nv_handle, &(handle->nv_statue));
-    // nvjpegEncoderStateCreate(handle->nv_handle, &(handle->nv_enc_state), NULL);
-    // return handle;
 }
 
-void NvJpegPython_destoryHandle(NvJpegPythonHandle** handle){
-    // nvjpegJpegStateDestroy((*handle)->nv_statue);
-    // nvjpegEncoderStateDestroy((*handle)->nv_enc_state);
-    // nvjpegDestroy((*handle)->nv_handle);
-    // free(*handle);
-    *handle = NULL;
+void NvJpegPython_cleanUpEnv(){
+    nvjpegJpegStateDestroy((__gllobal_NvJpegPython)->nv_statue);
+    nvjpegEncoderStateDestroy((__gllobal_NvJpegPython)->nv_enc_state);
+    nvjpegDestroy((__gllobal_NvJpegPython)->nv_handle);
+    free(__gllobal_NvJpegPython);
+    __gllobal_NvJpegPython = NULL;
 }
 
 NvJpegPythonImage* NvJpegPython_createImage(int width, int height, int nComponent, nvjpegChromaSubsampling_t subsampling){
@@ -114,8 +108,6 @@ void NvJpegPython_destoryImage(NvJpegPythonImage** img){
 NvJpegPythonImage* NvJpegPython_decode(NvJpegPythonHandle* handle, const unsigned char* jpegData, size_t length){
     nvjpegHandle_t nv_handle = handle->nv_handle;
     nvjpegJpegState_t nv_statue = handle->nv_statue;
-    // nvjpegCreateSimple(&nv_handle);
-    // nvjpegJpegStateCreate(nv_handle, &nv_statue);
 
     int widths[NVJPEG_MAX_COMPONENT];
     int heights[NVJPEG_MAX_COMPONENT];
@@ -131,9 +123,6 @@ NvJpegPythonImage* NvJpegPython_decode(NvJpegPythonHandle* handle, const unsigne
         printf("Error in nvjpegDecode. %d\n", nReturnCode);
         return NULL;
     }
-
-    // nvjpegJpegStateDestroy(nv_statue);
-    // nvjpegDestroy(nv_handle);
 
     return imgdesc;
 }
@@ -160,12 +149,10 @@ void NvJpegPython_destoryJpegData(NvJpegJpegData** jpegData){
 
 NvJpegJpegData* NvJpegPython_encode(NvJpegPythonHandle* handle, NvJpegPythonImage* img, int quality){
     nvjpegHandle_t nv_handle = handle->nv_handle;
-    // nvjpegCreateSimple(&nv_handle);
 
     nvjpegEncoderState_t nv_enc_state = handle->nv_enc_state;
     nvjpegEncoderParams_t nv_enc_params;
 
-    // nvjpegEncoderStateCreate(nv_handle, &nv_enc_state, NULL);
     nvjpegEncoderParamsCreate(nv_handle, &nv_enc_params, NULL);
 
     nvjpegEncoderParamsSetQuality(nv_enc_params, quality, NULL);
@@ -181,8 +168,6 @@ NvJpegJpegData* NvJpegPython_encode(NvJpegPythonHandle* handle, NvJpegPythonImag
     nvjpegEncodeRetrieveBitstream(nv_handle, nv_enc_state, jpegData->data, &(jpegData->size), NULL);
 
     nvjpegEncoderParamsDestroy(nv_enc_params);
-    // nvjpegEncoderStateDestroy(nv_enc_state);
-    // nvjpegDestroy(nv_handle);
     return jpegData;
 }
 
@@ -196,7 +181,7 @@ int NvJpegPython_test(char* inputJpegFilePath, char* outputRawPath, char* output
         return -1;
     }
 
-    NvJpegPythonHandle* handle = NvJpegPython_createHandle();
+    NvJpegPythonHandle* handle = NvJpegPython_startUpEnv();
     FILE* fp = fopen(inputJpegFilePath, "rb");
     unsigned char* jpegData = (unsigned char*)malloc(fileInfo.st_size);
     size_t size = fread(jpegData, 1, fileInfo.st_size, fp);
@@ -239,7 +224,7 @@ int NvJpegPython_test(char* inputJpegFilePath, char* outputRawPath, char* output
     NvJpegPython_destoryImage(&img);
     NvJpegPython_destoryJpegData(&jd);
 
-    NvJpegPython_destoryHandle(&handle);
+    NvJpegPython_cleanUpEnv();
     return 0;
 }
 
@@ -270,13 +255,11 @@ static PyMemberDef NvJpeg_DataMembers[] =
 
 static void NvJpeg_init(NvJpeg* Self, PyObject* pArgs)
 {
-    Self->m_handle = (long long)(NvJpegPython_createHandle());
+    Self->m_handle = (long long)(NvJpegPython_startUpEnv());
 }
 
 static void NvJpeg_Destruct(NvJpeg* Self)
 {
-    NvJpegPythonHandle* m_handle = (NvJpegPythonHandle*)Self->m_handle;
-    NvJpegPython_destoryHandle(&m_handle);
     Py_TYPE(Self)->tp_free((PyObject*)Self);
 }
 
@@ -347,7 +330,6 @@ static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
 
     NvJpegJpegData* data = NvJpegPython_encode(m_handle, img, quality);
 
-    // PyObject* rtn = PyByteArray_FromStringAndSize((const char*)data->data, data->size);
     PyObject* rtn = PyBytes_FromStringAndSize((const char*)data->data, data->size);
 
     NvJpegPython_destoryJpegData(&data);
@@ -472,6 +454,9 @@ static PyTypeObject NvJpeg_ClassInfo =
         NULL,
 };
 
+void NvJpeg_module_destroy(void *_){
+    NvJpegPython_cleanUpEnv();
+}
 
 static PyModuleDef ModuleInfo =
 {
@@ -479,7 +464,8 @@ static PyModuleDef ModuleInfo =
         "NvJpeg Module",
         "NvJpeg by Nvjpeg",
         -1,
-        NULL, NULL, NULL, NULL, NULL
+        NULL, NULL, NULL, NULL,
+        NvJpeg_module_destroy
 };
 
 PyMODINIT_FUNC
@@ -500,6 +486,5 @@ PyInit_nvjpeg(void) {
     import_array();
     return pReturn;
 }
-
 
 #endif
