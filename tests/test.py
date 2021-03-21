@@ -11,9 +11,9 @@ for lib in glob.glob(os.path.join(os.path.dirname(__file__), "../build/lib.*")):
 
 from nvjpeg import NvJpeg 
 
-nj = NvJpeg()
 
-image_file = os.path.join(os.path.dirname(__file__), "test.jpg")
+nj = NvJpeg()
+image_file = os.path.join(os.path.dirname(__file__), "test-image", "test.jpg")
 
 fp = open(image_file, "rb")
 img = fp.read()
@@ -36,3 +36,4 @@ cv2.imwrite(os.path.join(os.path.dirname(__file__), "out", "python-opencv-test.j
 
 nv_np = nj.read(image_file)
 nj.write(os.path.join(os.path.dirname(__file__), "out", "python-nvjpeg-write-test.jpg"), nv_np)
+

@@ -9,12 +9,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 from distutils.core import setup, Extension
 setup(name='pynvjpeg',
-    version='0.0.7',
+    version='0.0.8',
     ext_modules=[Extension('nvjpeg', ['nvjpeg-python.c'])],
     author="Usingnet",
     author_email="developer@usingnet.com",
     license="MIT",
-    description="nvjpeg for python",
+    description="Python interface for nvjpeg. Encode/Decode Jpeg with Nvidia GPU Hardware Acceleration.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/UsingNet/nvjpeg-python",

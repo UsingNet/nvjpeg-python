@@ -32,21 +32,29 @@ typedef struct
     nvjpegEncoderState_t nv_enc_state;
 }NvJpegPythonHandle;
 
-NvJpegPythonHandle* NvJpegPython_createHandle(){
-    NvJpegPythonHandle* handle = (NvJpegPythonHandle*)malloc(sizeof(NvJpegPythonHandle));
-    
-    nvjpegCreateSimple(&(handle->nv_handle));
-    nvjpegJpegStateCreate(handle->nv_handle, &(handle->nv_statue));
-    nvjpegEncoderStateCreate(handle->nv_handle, &(handle->nv_enc_state), NULL);
+static NvJpegPythonHandle* __gllobal_NvJpegPython = NULL;
 
-    return handle;
+NvJpegPythonHandle* NvJpegPython_createHandle(){
+    if(__gllobal_NvJpegPython==NULL){
+        __gllobal_NvJpegPython = (NvJpegPythonHandle*)malloc(sizeof(NvJpegPythonHandle));
+        nvjpegCreateSimple(&(__gllobal_NvJpegPython->nv_handle));
+        nvjpegJpegStateCreate(__gllobal_NvJpegPython->nv_handle, &(__gllobal_NvJpegPython->nv_statue));
+        nvjpegEncoderStateCreate(__gllobal_NvJpegPython->nv_handle, &(__gllobal_NvJpegPython->nv_enc_state), NULL);
+    }
+    return __gllobal_NvJpegPython;
+    // NvJpegPythonHandle* handle = NULL;
+    // handle = (NvJpegPythonHandle*)malloc(sizeof(NvJpegPythonHandle));
+    // nvjpegCreateSimple(&(handle->nv_handle));
+    // nvjpegJpegStateCreate(handle->nv_handle, &(handle->nv_statue));
+    // nvjpegEncoderStateCreate(handle->nv_handle, &(handle->nv_enc_state), NULL);
+    // return handle;
 }
 
 void NvJpegPython_destoryHandle(NvJpegPythonHandle** handle){
-    nvjpegJpegStateDestroy((*handle)->nv_statue);
-    nvjpegEncoderStateDestroy((*handle)->nv_enc_state);
-    nvjpegDestroy((*handle)->nv_handle);
-    free(*handle);
+    // nvjpegJpegStateDestroy((*handle)->nv_statue);
+    // nvjpegEncoderStateDestroy((*handle)->nv_enc_state);
+    // nvjpegDestroy((*handle)->nv_handle);
+    // free(*handle);
     *handle = NULL;
 }
 
