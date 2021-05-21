@@ -10,7 +10,8 @@ from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED, FIRST_CO
 for lib in glob.glob(os.path.join(os.path.dirname(__file__), "../build/lib.*")):
     sys.path.append(lib)
 
-from nvjpeg import NvJpeg 
+from nvjpeg import NvJpeg
+nj = NvJpeg()
 
 
 image_dir = os.path.join(os.path.dirname(__file__), "test-image")

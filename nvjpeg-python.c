@@ -45,11 +45,13 @@ NvJpegPythonHandle* NvJpegPython_startUpEnv(){
 }
 
 void NvJpegPython_cleanUpEnv(){
-    nvjpegJpegStateDestroy((__gllobal_NvJpegPython)->nv_statue);
-    nvjpegEncoderStateDestroy((__gllobal_NvJpegPython)->nv_enc_state);
-    nvjpegDestroy((__gllobal_NvJpegPython)->nv_handle);
-    free(__gllobal_NvJpegPython);
-    __gllobal_NvJpegPython = NULL;
+    if(__gllobal_NvJpegPython != NULL) {
+      nvjpegJpegStateDestroy((__gllobal_NvJpegPython)->nv_statue);
+      nvjpegEncoderStateDestroy((__gllobal_NvJpegPython)->nv_enc_state);
+      nvjpegDestroy((__gllobal_NvJpegPython)->nv_handle);
+      free(__gllobal_NvJpegPython);
+      __gllobal_NvJpegPython = NULL;
+    }
 }
 
 NvJpegPythonImage* NvJpegPython_createImage(int width, int height, int nComponent, nvjpegChromaSubsampling_t subsampling){
@@ -252,11 +254,11 @@ static PyMemberDef NvJpeg_DataMembers[] =
         {NULL, 0, 0, 0, NULL}
 };
 
-
-static void NvJpeg_init(NvJpeg* Self, PyObject* pArgs)
-{
-    Self->m_handle = (long long)(NvJpegPython_startUpEnv());
+int NvJpeg_init(NvJpeg *self, PyObject *args, PyObject *kwds) {
+  self->m_handle = (long long)(NvJpegPython_startUpEnv());
+  return 0;
 }
+
 
 static void NvJpeg_Destruct(NvJpeg* Self)
 {
@@ -435,24 +437,21 @@ static PyMethodDef NvJpeg_MethodMembers[] =
 
 static PyTypeObject NvJpeg_ClassInfo =
 {
-        PyVarObject_HEAD_INIT(NULL, 0)"nvjpeg.NvJpeg",
-        sizeof(NvJpeg),
-        0,
-        (destructor)NvJpeg_Destruct,
-        NULL,NULL,NULL,NULL,
-        (reprfunc)NvJpeg_Repr,
-        NULL,NULL,NULL,NULL,NULL,
-        (reprfunc)NvJpeg_Str,
-        NULL,NULL,NULL,
-        Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
-        "NvJpeg Python Objects---Extensioned by nvjpeg",
-        NULL,NULL,NULL,0,NULL,NULL,
-        NvJpeg_MethodMembers,
-        NvJpeg_DataMembers,
-        NULL,NULL,NULL,NULL,NULL,0,
-        (initproc)NvJpeg_init,
-        NULL,
+        PyVarObject_HEAD_INIT(NULL, 0)
+        .tp_name      = "nvjpeg.NvJpeg",
+        .tp_new = PyType_GenericNew,
+        .tp_basicsize = sizeof(NvJpeg),
+        .tp_dealloc   = NvJpeg_Destruct,
+        .tp_repr      = NvJpeg_Repr,
+        .tp_str       = NvJpeg_Str,
+        .tp_flags     = Py_TPFLAGS_DEFAULT,
+        .tp_doc       = "NvJpeg Python Objects---Extensioned by nvjpeg",
+        .tp_methods   = NvJpeg_MethodMembers,
+        .tp_members   = NvJpeg_DataMembers,
+        .tp_init      = NvJpeg_init,
+        .tp_itemsize = 0,
 };
+
 
 void NvJpeg_module_destroy(void *_){
     NvJpegPython_cleanUpEnv();
@@ -471,10 +470,8 @@ static PyModuleDef ModuleInfo =
 PyMODINIT_FUNC
 PyInit_nvjpeg(void) {
     PyObject * pReturn = NULL;
-    NvJpeg_ClassInfo.tp_new = PyType_GenericNew;
 
-
-    if(PyType_Ready(&NvJpeg_ClassInfo) < 0)
+    if(PyType_Ready(&NvJpeg_ClassInfo) < 0) 
         return NULL;
 
     pReturn = PyModule_Create(&ModuleInfo);
@@ -482,7 +479,14 @@ PyInit_nvjpeg(void) {
         return NULL;
 
     Py_INCREF(&ModuleInfo);
-    PyModule_AddObject(pReturn, "NvJpeg", (PyObject*)&NvJpeg_ClassInfo);
+
+    Py_INCREF(&NvJpeg_ClassInfo);
+    if (PyModule_AddObject(pReturn, "NvJpeg", (PyObject*)&NvJpeg_ClassInfo) < 0) {
+        Py_DECREF(&NvJpeg_ClassInfo);
+        Py_DECREF(pReturn);
+        return NULL;
+    }
+
     import_array();
     return pReturn;
 }
