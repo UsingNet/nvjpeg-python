@@ -17,24 +17,65 @@ nj = NvJpeg()
 image_dir = os.path.join(os.path.dirname(__file__), "test-image")
 image_dir_out = os.path.join(os.path.dirname(__file__), "out")
 
-def test_process(id):
-    nj = NvJpeg()
-    # print("Process %d" %(id,))
-    fp = open(os.path.join(image_dir, "%d.jpg" % (id,)), "rb")
-    img = fp.read()
-    fp.close()
-    nj_np = nj.decode(img)
-    print("Decode Image %d Size:" % (id,), nj_np.shape)
-    nj_jpg = nj.encode(nj_np)
-    print('Jpeg %d Size: %d' % (id, len(nj_jpg)))
-    fp = open(os.path.join(image_dir_out, "nv-mp-test-%d.jpg" % (id,)), "wb")
-    fp.write(nj_jpg)
-    fp.close()
+success_times = 0
 
- 
-executor = ThreadPoolExecutor(max_workers=10)
-task_ids = range(10)
-print("submit test")
-all_task = [executor.submit(test_process, (id)) for id in task_ids]
+def test_process_global(id):
+    global nj,success_times
+    # nj = NvJpeg()
+    for run_time in range(id+1):
+        # print("Process %d run time %d" %(id, run_time))
+        fp = open(os.path.join(image_dir, "%d.jpg" % (id%10,)), "rb")
+        img = fp.read()
+        fp.close()
+        nj_np = nj.decode(img)
+        # print("Decode Image %d Size:" % (id,), nj_np.shape)
+        nj_jpg = nj.encode(nj_np)
+        # print('Jpeg %d Size: %d' % (id, len(nj_jpg)))
+        fp = open(os.path.join(image_dir_out, "nv-mp-test-%d.jpg" % (id,)), "wb")
+        fp.write(nj_jpg)
+        fp.close()
+    # del nj
+    success_times+=1
+    # print("\tProcess %d test finished" % (id,))
+
+
+def test_process_in_threads(id):
+    global success_times
+    nj = NvJpeg()
+    for run_time in range(id+1):
+        # print("Process %d run time %d" %(id, run_time))
+        fp = open(os.path.join(image_dir, "%d.jpg" % (id%10,)), "rb")
+        img = fp.read()
+        fp.close()
+        nj_np = nj.decode(img)
+        # print("Decode Image %d Size:" % (id,), nj_np.shape)
+        nj_jpg = nj.encode(nj_np)
+        # print('Jpeg %d Size: %d' % (id, len(nj_jpg)))
+        fp = open(os.path.join(image_dir_out, "nv-mp-test-%d.jpg" % (id,)), "wb")
+        fp.write(nj_jpg)
+        fp.close()
+    del nj
+    success_times+=1
+    # print("\tProcess %d test finished" % (id,))
+
+TEST_TIMES = 50
+
+executor = ThreadPoolExecutor(max_workers=TEST_TIMES)
+task_ids = range(TEST_TIMES)
+print("submit global test")
+success_times = 0
+all_task = [executor.submit(test_process_global, (id)) for id in task_ids]
 wait(all_task, return_when=ALL_COMPLETED)
-print("test-finished")
+if success_times == TEST_TIMES:
+    print("global test finished")
+else:
+    print("global test with error %d" % (TEST_TIMES-success_times))
+
+print("submit in threads test")
+success_times = 0
+all_task = [executor.submit(test_process_in_threads, (id)) for id in task_ids]
+wait(all_task, return_when=ALL_COMPLETED)
+if success_times == TEST_TIMES:
+    print("in threads test finished")
+else:
+    print("in threads test with error %d" % (TEST_TIMES-success_times))
