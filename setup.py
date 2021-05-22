@@ -8,9 +8,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 from distutils.core import setup, Extension
+
+
+extension_nvjpeg = Extension('nvjpeg', ['nvjpeg-python.cpp', 'src/x86/JpegCoder.cpp'], ['include'], [('JPEGCODER_ARCH', 'x86')])
+
+
 setup(name='pynvjpeg',
     version='0.0.10',
-    ext_modules=[Extension('nvjpeg', ['nvjpeg-python.c'])],
+    ext_modules=[extension_nvjpeg],
     author="Usingnet",
     author_email="developer@usingnet.com",
     license="MIT",
