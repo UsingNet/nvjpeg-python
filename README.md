@@ -9,6 +9,11 @@ NvJpeg - Python
 * gcc >= 7.5
 * make >= 4.1
 
+## System
+Linux(x86, x86_64)
+Nvidia Jetson OS
+
+
 ## Install
 ```shell
 pip install pynvjpeg

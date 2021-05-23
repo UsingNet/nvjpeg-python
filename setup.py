@@ -38,7 +38,7 @@ if platform.system() == 'Linux':
 
 
 setup(name='pynvjpeg',
-    version='0.0.11',
+    version='0.0.12',
     ext_modules=[extension_nvjpeg],
     author="Usingnet",
     author_email="developer@usingnet.com",
@@ -75,5 +75,5 @@ setup(name='pynvjpeg',
         'Source': 'https://github.com/UsingNet/nvjpeg-python',
         'Tracker': 'https://github.com/UsingNet/nvjpeg-python/issues',
     },
-    install_requires=['numpy>=1.17']
+    install_requires=['numpy>=1.17', 'wheel>=0.36.2']
 )
