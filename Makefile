@@ -11,11 +11,16 @@ out:
 	mkdir out
 
 test:
-	${PYTHON_BIN} tests/test.py
+	# ${PYTHON_BIN} tests/test.py
 	${PYTHON_BIN} tests/test-with-multiprocessing.py
 
-pynvjpeg:
+pynvjpeg: build/lib/libcolor_space.a
+	# rm build/lib.linux-aarch64-3.6/nvjpeg.cpython-36m-aarch64-linux-gnu.so -f
 	${PYTHON_BIN} setup.py build
+
+build/lib/libcolor_space.a: src/jetson/Utils/ColorSpace.cu
+	mkdir -p build/lib
+	nvcc -DCUDNN  --compiler-options "-fPIC -lstdc++ -pthread -lm" -c src/jetson/Utils/ColorSpace.cu -o build/lib/libcolor_space.a
 
 clean:
 	rm -Rf out build dist pynvjpeg.egg-info

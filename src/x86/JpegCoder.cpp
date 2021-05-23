@@ -81,6 +81,10 @@ void JpegCoder::cleanUpEnv(){
     }
 }
 
+void JpegCoder::ensureThread(long threadIdent){
+    ;
+}
+
 JpegCoderImage* JpegCoder::decode(const unsigned char* jpegData, size_t length){
     nvjpegHandle_t nv_handle = JPEGCODER_GLOBAL_CONTEXT->nv_handle;
     nvjpegJpegState_t nv_statue = JPEGCODER_GLOBAL_CONTEXT->nv_statue;

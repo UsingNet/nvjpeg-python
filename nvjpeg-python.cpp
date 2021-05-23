@@ -1,10 +1,10 @@
 #include <stdio.h>
-#include <nvjpeg.h>
 #include <malloc.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 #include <Python.h>
+#include <pythread.h>
 #include <structmember.h>
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
@@ -55,7 +55,14 @@ static PyObject* NvJpeg_decode(NvJpeg* Self, PyObject* Argvs)
         PyErr_SetString(PyExc_ValueError, "Parse the argument FAILED! You should jpegData byte string!");
         return NULL;
     }
-    auto img = m_handle->decode((const unsigned char*)jpegData, len);
+    JpegCoderImage* img;
+    try{
+        m_handle->ensureThread(PyThread_get_thread_ident());
+        img = m_handle->decode((const unsigned char*)jpegData, len);
+    }catch(JpegCoderError e){
+        PyErr_Format(PyExc_ValueError, "%s, Code: %d", e.what(), e.code());
+        return NULL;
+    }
 
     unsigned char* data = img->buffer();
 
@@ -101,6 +108,7 @@ static PyObject* NvJpeg_encode(NvJpeg* Self, PyObject* Argvs)
     img->fill(buffer);
     Py_DECREF(bytes);
 
+    m_handle->ensureThread(PyThread_get_thread_ident());
     auto data = m_handle->encode(img, quality);
 
     PyObject* rtn = PyBytes_FromStringAndSize((const char*)data->data, data->size);
@@ -145,6 +153,7 @@ static PyObject* NvJpeg_read(NvJpeg* Self, PyObject* Argvs)
 
     fclose(fp);
 
+    m_handle->ensureThread(PyThread_get_thread_ident());
     auto img = m_handle->decode((const unsigned char*)jpegData, dataLength);
 
     free(jpegData);

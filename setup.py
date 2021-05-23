@@ -1,20 +1,43 @@
 #!/usr/bin/env python
 import sys
 import os
+import platform
 import glob
 from setuptools import setup, find_packages, Extension
+import numpy
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 from distutils.core import setup, Extension
 
-
-extension_nvjpeg = Extension('nvjpeg', ['nvjpeg-python.cpp', 'src/x86/JpegCoder.cpp'], ['include'], [('JPEGCODER_ARCH', 'x86')])
+if platform.system() == 'Linux':
+    if os.path.exists('/usr/src/jetson_multimedia_api'):
+        # Jetson
+        extension_nvjpeg = Extension('nvjpeg', 
+            [
+                'nvjpeg-python.cpp', 'src/jetson/JpegCoder.cpp',
+                '/usr/src/jetson_multimedia_api/samples/common/classes/NvJpegDecoder.cpp', '/usr/src/jetson_multimedia_api/samples/common/classes/NvJpegEncoder.cpp',
+                '/usr/src/jetson_multimedia_api/samples/common/classes/NvBuffer.cpp', '/usr/src/jetson_multimedia_api/samples/common/classes/NvElement.cpp',
+                '/usr/src/jetson_multimedia_api/samples/common/classes/NvLogging.cpp', '/usr/src/jetson_multimedia_api/samples/common/classes/NvElementProfiler.cpp',
+                '/usr/src/jetson_multimedia_api/argus/samples/utils/CUDAHelper.cpp'
+            ], 
+            ['include', '/usr/src/jetson_multimedia_api/argus/samples/utils', '/usr/src/jetson_multimedia_api/include', '/usr/src/jetson_multimedia_api/include/libjpeg-8b', numpy.get_include()], 
+            [('JPEGCODER_ARCH', 'jetson')],
+            library_dirs=['/usr/lib/aarch64-linux-gnu/tegra', 'build/lib'],
+            libraries=['color_space', 'cudart', 'nvjpeg', 'cuda']
+        )
+    else:
+        # x86 or x86_64
+        extension_nvjpeg = Extension('nvjpeg', 
+            ['nvjpeg-python.cpp', 'src/x86/JpegCoder.cpp'], 
+            ['include', numpy.get_include()], 
+            [('JPEGCODER_ARCH', 'x86')]
+        )
 
 
 setup(name='pynvjpeg',
-    version='0.0.10',
+    version='0.0.11',
     ext_modules=[extension_nvjpeg],
     author="Usingnet",
     author_email="developer@usingnet.com",

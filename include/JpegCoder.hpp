@@ -6,7 +6,7 @@
 #include <iostream>
 #include <exception>
 
-class JpegCoderError: std::runtime_error{
+class JpegCoderError: public std::runtime_error{
 protected:
     int _code;
 public:
@@ -63,6 +63,11 @@ public:
         this->size = size;
     }
 
+    JpegCoderBytes(unsigned char* data, size_t size){
+        this->data = data;
+        this->size = size;
+    }
+
     ~JpegCoderBytes(){
         if(this->data!=nullptr){
             free(this->data);
@@ -73,9 +78,11 @@ public:
 class JpegCoder{
 protected:
     static void* _global_context;
+    void* _local_context;
 public:
     JpegCoder();
     ~JpegCoder();
+    void ensureThread(long threadIdent);
     JpegCoderImage* decode(const unsigned char* jpegData, size_t length);
     JpegCoderBytes* encode(JpegCoderImage* img, int quality);
     static void cleanUpEnv();
