@@ -11,12 +11,13 @@ out:
 	mkdir out
 
 test:
-	# ${PYTHON_BIN} tests/test.py
-	${PYTHON_BIN} tests/test-with-multiprocessing.py
+	${PYTHON_BIN} tests/test.py
+	# ${PYTHON_BIN} tests/test-with-multiprocessing.py
 
 pynvjpeg: build/lib/libcolor_space.a
-	# rm build/lib.linux-aarch64-3.6/nvjpeg.cpython-36m-aarch64-linux-gnu.so -f
 	${PYTHON_BIN} setup.py build
+
+lib_cuda: build/lib/libcolor_space.a
 
 build/lib/libcolor_space.a: src/jetson/Utils/ColorSpace.cu
 	mkdir -p build/lib

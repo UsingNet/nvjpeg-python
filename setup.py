@@ -14,6 +14,7 @@ from distutils.core import setup, Extension
 if platform.system() == 'Linux':
     if os.path.exists('/usr/src/jetson_multimedia_api'):
         # Jetson
+        os.system('make lib_cuda')
         extension_nvjpeg = Extension('nvjpeg', 
             [
                 'nvjpeg-python.cpp', 'src/jetson/JpegCoder.cpp',
