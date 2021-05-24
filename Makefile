@@ -12,7 +12,7 @@ out:
 
 test:
 	${PYTHON_BIN} tests/test.py
-	# ${PYTHON_BIN} tests/test-with-multiprocessing.py
+	${PYTHON_BIN} tests/test-with-multiprocessing.py
 
 pynvjpeg: build/lib/libcolor_space.a
 	${PYTHON_BIN} setup.py build
