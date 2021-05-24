@@ -231,52 +231,7 @@ static PyTypeObject NvJpeg_ClassInfo =
         .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
         .tp_name      = "nvjpeg.NvJpeg",
         .tp_basicsize = sizeof(NvJpeg),
-        .tp_itemsize = 0,
-        .tp_dealloc   = NvJpeg_Destruct,
-        // .tp_print   = NULL,
-        .tp_getattr = NULL,
-        .tp_setattr = NULL,
-        .tp_as_async = NULL,
-        .tp_repr      = NvJpeg_Repr,
-        .tp_as_number = NULL,
-        .tp_as_sequence = NULL,
-        .tp_as_mapping = NULL,
-        .tp_hash = NULL,
-        .tp_call = NULL,
-        .tp_str       = NvJpeg_Str,
-        .tp_getattro = NULL,
-        .tp_setattro = NULL,
-        .tp_as_buffer = NULL,
-
-        .tp_flags     = Py_TPFLAGS_DEFAULT,
-        .tp_doc       = "NvJpeg Python Objects---Extensioned by nvjpeg",
-        .tp_traverse  = NULL,
-        .tp_clear = NULL,
-        .tp_richcompare = NULL,
-        .tp_weaklistoffset = 0,
-        .tp_iter = NULL,
-        .tp_iternext = NULL,
-
-        .tp_methods   = NvJpeg_MethodMembers,
-        .tp_members   = NvJpeg_DataMembers,
-        .tp_getset = NULL,
-        .tp_base = NULL,
-        .tp_dict = NULL,
-        .tp_descr_get = NULL,
-        .tp_descr_set = NULL,
-        .tp_dictoffset = 0,
-
-        .tp_init      = NvJpeg_init,
-        .tp_alloc   = NULL,
-        .tp_new = PyType_GenericNew,
-        .tp_free = NULL,
-        .tp_is_gc = NULL,
-        .tp_bases = NULL,
-        .tp_mro = NULL,
-        .tp_cache = NULL,
-        .tp_subclasses = NULL,
-        .tp_weaklist = NULL,
-        .tp_del = NULL
+        .tp_itemsize = 0
 };
 
 
@@ -297,6 +252,18 @@ static PyModuleDef ModuleInfo =
 PyMODINIT_FUNC
 PyInit_nvjpeg(void) {
     PyObject * pReturn = NULL;
+
+    NvJpeg_ClassInfo.tp_dealloc   = NvJpeg_Destruct;
+    NvJpeg_ClassInfo.tp_repr      = NvJpeg_Repr;
+    NvJpeg_ClassInfo.tp_str       = NvJpeg_Str;
+    NvJpeg_ClassInfo.tp_flags     = Py_TPFLAGS_DEFAULT;
+    NvJpeg_ClassInfo.tp_doc       = "NvJpeg Python Objects---Extensioned by nvjpeg";
+    NvJpeg_ClassInfo.tp_weaklistoffset = 0;
+    NvJpeg_ClassInfo.tp_methods   = NvJpeg_MethodMembers;
+    NvJpeg_ClassInfo.tp_members   = NvJpeg_DataMembers;
+    NvJpeg_ClassInfo.tp_dictoffset = 0;
+    NvJpeg_ClassInfo.tp_init      = NvJpeg_init;
+    NvJpeg_ClassInfo.tp_new = PyType_GenericNew;
 
     if(PyType_Ready(&NvJpeg_ClassInfo) < 0) 
         return NULL;
