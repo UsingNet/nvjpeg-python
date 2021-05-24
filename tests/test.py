@@ -6,11 +6,10 @@ import numpy as np
 import cv2
 import glob
 
-for lib in glob.glob(os.path.join(os.path.dirname(__file__), "../build/lib.*")):
+for lib in glob.glob(os.path.abspath(os.path.join(os.path.dirname(__file__), "../build/lib.*"))):
     sys.path.append(lib)
 
 from nvjpeg import NvJpeg 
-
 
 nj = NvJpeg()
 image_file = os.path.join(os.path.dirname(__file__), "test-image", "test.jpg")

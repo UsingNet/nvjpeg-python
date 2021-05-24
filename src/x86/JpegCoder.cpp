@@ -25,9 +25,9 @@ JpegCoderImage::JpegCoderImage(size_t width, size_t height, short nChannel, Jpeg
     nvjpegImage_t *img = (nvjpegImage_t*)malloc(sizeof(nvjpegImage_t));
     for(int i = 0;i<NVJPEG_MAX_COMPONENT;i++){
         img->channel[i] = pBuffer + (width*height*i);
-        img->pitch[i] = width;
+        img->pitch[i] = (unsigned int)width;
     }
-    img->pitch[0] = width*3;
+    img->pitch[0] = (unsigned int)width*3;
 
     this->img = img;
     this->height = height;
@@ -116,7 +116,7 @@ JpegCoderBytes* JpegCoder::encode(JpegCoderImage* img, int quality){
     nvjpegEncoderParamsSetOptimizedHuffman(nv_enc_params, 1, NULL);
     nvjpegEncoderParamsSetSamplingFactors(nv_enc_params, ChromaSubsampling_Covert_JpegCoderToNvJpeg(img->subsampling), NULL);
 
-    int nReturnCode = nvjpegEncodeImage(nv_handle, nv_enc_state, nv_enc_params, (nvjpegImage_t*)(img->img), NVJPEG_INPUT_BGRI, img->width, img->height, NULL);
+    int nReturnCode = nvjpegEncodeImage(nv_handle, nv_enc_state, nv_enc_params, (nvjpegImage_t*)(img->img), NVJPEG_INPUT_BGRI, (int)img->width, (int)img->height, NULL);
     if (NVJPEG_STATUS_SUCCESS != nReturnCode){
         throw JpegCoderError(nReturnCode, "NvJpeg Encoder Error");
     }

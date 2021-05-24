@@ -33,8 +33,21 @@ if platform.system() == 'Linux':
         extension_nvjpeg = Extension('nvjpeg', 
             ['nvjpeg-python.cpp', 'src/x86/JpegCoder.cpp'], 
             ['include', numpy.get_include()], 
-            [('JPEGCODER_ARCH', 'x86')]
+            [('JPEGCODER_ARCH', 'x86')],
         )
+elif platform.system() == 'Windows':
+    cuda_include = '%s\\include' % (os.environ['CUDA_PATH'],)
+    if platform.machine().endswith('64'):
+        cuda_lib = '%s\\lib\\x64' % (os.environ['CUDA_PATH'],)
+    else:
+        cuda_lib = '%s\\lib\\Win32' % (os.environ['CUDA_PATH'],)
+    extension_nvjpeg = Extension('nvjpeg', 
+        ['nvjpeg-python.cpp', 'src\\x86\\JpegCoder.cpp'], 
+        ['include', numpy.get_include(), cuda_include], 
+        [('JPEGCODER_ARCH', 'x86')],
+        extra_compile_args=['/std:c++latest'],
+        library_dirs=[cuda_lib],
+    )
 
 
 setup(name='pynvjpeg',
@@ -75,5 +88,5 @@ setup(name='pynvjpeg',
         'Source': 'https://github.com/UsingNet/nvjpeg-python',
         'Tracker': 'https://github.com/UsingNet/nvjpeg-python/issues',
     },
-    install_requires=['numpy>=1.17', 'wheel>=0.36.2']
+    install_requires=['numpy>=1.17']
 )

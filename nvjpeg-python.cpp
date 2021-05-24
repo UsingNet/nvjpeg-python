@@ -8,7 +8,7 @@
 #include <structmember.h>
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
-#include <JpegCoder.hpp>
+#include "JpegCoder.hpp"
 
 typedef struct
 {
@@ -128,8 +128,13 @@ static PyObject* NvJpeg_read(NvJpeg* Self, PyObject* Argvs)
         PyErr_SetString(PyExc_ValueError, "Parse the argument FAILED! You should pass jpeg file path string!");
         return NULL;
     }
-
+    #ifdef _MSC_VER
+    FILE* fp;
+    fopen_s(&fp, (const char*)jpegFile, "rb");
+    #else
     FILE* fp = fopen((const char*)jpegFile, "rb");
+    #endif
+
     if (fp == NULL){
         PyErr_Format(PyExc_IOError, "Cannot open file \"%s\"", jpegFile);
         return NULL;
@@ -178,7 +183,13 @@ static PyObject* NvJpeg_write(NvJpeg* Self, PyObject* Argvs)
         return NULL;
     }
 
+    #ifdef _MSC_VER
+    FILE* fp;
+    fopen_s(&fp, (const char*)jpegFile, "wb");
+    #else
     FILE* fp = fopen((const char*)jpegFile, "wb");
+    #endif
+    
     if(fp == NULL){
         PyErr_Format(PyExc_IOError, "Cannot open file \"%s\"", jpegFile);
         return NULL;
@@ -217,12 +228,12 @@ static PyMethodDef NvJpeg_MethodMembers[] =
 
 static PyTypeObject NvJpeg_ClassInfo =
 {
-        PyVarObject_HEAD_INIT(NULL, 0)
+        .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
         .tp_name      = "nvjpeg.NvJpeg",
         .tp_basicsize = sizeof(NvJpeg),
         .tp_itemsize = 0,
         .tp_dealloc   = NvJpeg_Destruct,
-        .tp_print   = NULL,
+        // .tp_print   = NULL,
         .tp_getattr = NULL,
         .tp_setattr = NULL,
         .tp_as_async = NULL,
