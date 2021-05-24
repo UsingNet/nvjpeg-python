@@ -228,10 +228,10 @@ static PyMethodDef NvJpeg_MethodMembers[] =
 
 static PyTypeObject NvJpeg_ClassInfo =
 {
-        .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
-        .tp_name      = "nvjpeg.NvJpeg",
-        .tp_basicsize = sizeof(NvJpeg),
-        .tp_itemsize = 0
+        PyVarObject_HEAD_INIT(NULL, 0)
+        "nvjpeg.NvJpeg",
+        sizeof(NvJpeg),
+        0
 };
 
 

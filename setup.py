@@ -45,13 +45,12 @@ elif platform.system() == 'Windows':
         ['nvjpeg-python.cpp', 'src\\x86\\JpegCoder.cpp'], 
         ['include', numpy.get_include(), cuda_include], 
         [('JPEGCODER_ARCH', 'x86')],
-        extra_compile_args=['/std:c++latest'],
         library_dirs=[cuda_lib],
     )
 
 
 setup(name='pynvjpeg',
-    version='0.0.12',
+    version='0.0.13',
     ext_modules=[extension_nvjpeg],
     author="Usingnet",
     author_email="developer@usingnet.com",
