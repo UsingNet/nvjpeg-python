@@ -10,9 +10,9 @@ NvJpeg - Python
 * make >= 4.1
 
 ## System
-Linux(x86, x86_64)
+Linux
+Windows
 Nvidia Jetson OS
-
 
 ## Install
 ```shell
