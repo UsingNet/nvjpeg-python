@@ -214,7 +214,7 @@ static PyObject* NvJpeg_write(NvJpeg* Self, PyObject* Argvs)
     char* jpegData;
     Py_ssize_t jpegDataSize;
     PyBytes_AsStringAndSize(encodeResponse, &jpegData, &jpegDataSize);
-    ssize_t write_size = fwrite(jpegData, 1, jpegDataSize, fp);
+    Py_ssize_t write_size = fwrite(jpegData, 1, jpegDataSize, fp);
     if(write_size != jpegDataSize){
         PyErr_Format(PyExc_IOError, "Write file \"%s\" with error", jpegFile);
     }
